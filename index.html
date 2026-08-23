@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halal Routine & Hydration System</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts & Canvas Confetti -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-icon">🌙</div>
+        <div>
+          <div class="brand-title-row">
+            <h1>Halal Routine & Hydration</h1>
+            <span class="badge badge-emerald">Halal Certified</span>
+          </div>
+          <p class="subtitle">Daily Meal Schedule • Hydration • Weight Loss</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live Clock -->
+        <div class="live-clock" id="live-clock">00:00:00</div>
+
+        <!-- Super Admin Button -->
+        <button id="btn-admin" class="btn btn-admin" title="Open Ridwaan's Command Center (Ctrl+Shift+A)">
+          ⚡ Admin Center
+        </button>
+
+        <!-- Ramadan Mode Toggle -->
+        <button id="btn-ramadan-toggle" class="btn btn-ramadan">
+          🌙 Ramadan Mode
+        </button>
+
+        <!-- Notification Permission Button -->
+        <button id="btn-notify-perm" class="btn btn-slate">
+          🔔 Alerts: Off
+        </button>
+
+        <!-- Sound Test Button -->
+        <button id="btn-test-sound" class="btn btn-slate" title="Test notification chime">
+          🔊 Chime
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-container">
+
+    <!-- Ramadan / Fasting Banner (Visible when Ramadan mode is active) -->
+    <section id="ramadan-banner" class="ramadan-banner hidden">
+      <div class="ramadan-banner-header">
+        <div class="ramadan-title-group">
+          <span class="moon-icon">🌙</span>
+          <div>
+            <h3>Ramadan Fasting Protocol Active</h3>
+            <p>Hydration and meals are synchronized before Fajr (Suhoor) and after Maghrib (Iftar).</p>
+          </div>
+        </div>
+        <button id="btn-exit-ramadan" class="btn-link">Switch to Standard Routine</button>
+      </div>
+
+      <div class="ramadan-timings-grid">
+        <div class="timing-card">
+          <label>🌅 Suhoor (Pre-Fajr Cutoff):</label>
+          <input type="time" id="ramadan-suhoor-time" value="04:45" />
+          <small>Focus: Oats, Eggs, Bananas & 3-4 glasses water</small>
+        </div>
+        <div class="timing-card">
+          <label>🌇 Iftar (Sunset / Maghrib):</label>
+          <input type="time" id="ramadan-iftar-time" value="18:45" />
+          <small>Focus: 3 Dates, Warm Broth & Hydration</small>
+        </div>
+        <div class="timing-card flex-end">
+          <button id="btn-apply-ramadan-times" class="btn btn-amber full-width">
+            Apply to Schedule
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24-Hour Routine Timeline & Orbit Visualizer -->
+    <section class="card timeline-card">
+      <div class="card-header">
+        <h3>🕒 24-Hour Routine Orbit Timeline</h3>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="dot dot-emerald"></span> Meals</span>
+          <span class="legend-item"><span class="dot dot-sky"></span> Water</span>
+        </div>
+      </div>
+      <div class="timeline-track-container">
+        <div class="timeline-track" id="timeline-track">
+          <!-- Marker needle -->
+          <div class="time-needle" id="time-needle" style="left: 45%;">
+            <span class="needle-label">NOW</span>
+          </div>
+        </div>
+        <div class="timeline-markers">
+          <span>00:00</span>
+          <span>06:00</span>
+          <span>12:00</span>
+          <span>18:00</span>
+          <span>24:00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Macro & Hydration Dashboard -->
+    <section class="card metrics-card">
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <span class="metric-label">🔥 Target Calories</span>
+          <div class="metric-value"><span id="metric-calories">1420</span> <small>kcal</small></div>
+          <div class="progress-bar"><div class="progress-fill fill-rose" id="prog-cal" style="width: 75%;"></div></div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">💪 Target Protein</span>
+          <div class="metric-value"><span id="metric-protein">110</span> <small>grams</small></div>
+          <div class="progress-bar"><div class="progress-fill fill-emerald" id="prog-prot" style="width: 80%;"></div></div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">💧 Hydration</span>
+          <div class="metric-value"><span id="metric-water-count">0</span> / <span id="metric-water-target">10</span> <small>glasses</small></div>
+          <div class="progress-bar"><div class="progress-fill fill-sky" id="prog-water" style="width: 0%;"></div></div>
+        </div>
+
+        <div class="metric-box">
+          <span class="metric-label">✅ Routine Adherence</span>
+          <div class="metric-value"><span id="metric-adherence">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill fill-emerald" id="prog-adherence" style="width: 0%;"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10-Glass Water Tracker Section -->
+    <section class="card water-card">
+      <div class="card-header">
+        <div>
+          <h3>💧 Daily Water Tracker</h3>
+          <p class="card-subtitle">Click glasses as you drink (~250ml each) to prevent dehydration and accelerate fat loss.</p>
+        </div>
+        <div class="water-quick-actions">
+          <button id="btn-water-minus" class="btn btn-icon">-1</button>
+          <button id="btn-water-plus" class="btn btn-sky font-bold">+1 Glass</button>
+          <button id="btn-water-reset" class="btn btn-slate text-xs">Reset</button>
+        </div>
+      </div>
+
+      <!-- Editable Water Rules Banner -->
+      <div class="water-rules-grid">
+        <div class="rule-box">
+          <span>• Drink at each reminder:</span>
+          <input type="number" id="input-water-per-reminder" min="1" max="4" value="2" />
+          <small>glass(es)</small>
+        </div>
+        <div class="rule-box">
+          <span>• Drink with each meal:</span>
+          <input type="number" id="input-water-with-meals" min="0" max="3" value="1" />
+          <small>glass(es)</small>
+        </div>
+        <div class="rule-box font-bold">
+          <span>• Total Daily Target:</span>
+          <input type="number" id="input-water-total-target" min="4" max="20" value="10" />
+          <small>glasses</small>
+        </div>
+      </div>
+
+      <!-- 10-Glass Visual Grid -->
+      <div class="glass-grid" id="glass-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Daily Schedule & Meal Formula Section -->
+    <section class="card schedule-card">
+      <div class="card-header">
+        <div>
+          <h3>🕒 Daily Schedule & Notification Times</h3>
+          <p class="card-subtitle">Edit reminder times, meal combos (Food 1 + Food 2 + Food 3), and water allotments.</p>
+        </div>
+        <div class="schedule-actions">
+          <button id="btn-add-meal" class="btn btn-emerald">+ Add Meal</button>
+          <button id="btn-add-water" class="btn btn-sky">+ Add Water Slot</button>
+          <button id="btn-add-snack" class="btn btn-slate">+ Add Snack</button>
+        </div>
+      </div>
+
+      <!-- Schedule Item List -->
+      <div class="schedule-list" id="schedule-list">
+        <!-- Dynamically rendered via JS -->
+      </div>
+    </section>
+
+    <!-- Template Presets -->
+    <section class="card presets-card">
+      <div class="card-header">
+        <h3>✨ Weight Loss & Fasting Preset Plans</h3>
+      </div>
+      <div class="presets-grid">
+        <div class="preset-box" onclick="loadPreset('standard')">
+          <h4>🥗 Standard Fat Loss Plan</h4>
+          <p>Balanced schedule: Breakfast, Lunch, Snack & Dinner with distributed hydration intervals.</p>
+          <small>6 Slots • 10 Glasses Water</small>
+        </div>
+
+        <div class="preset-box" onclick="loadPreset('ramadan')">
+          <h4>🌙 Ramadan Fasting Schedule</h4>
+          <p>Pre-Fajr Suhoor nourishment, peaceful daytime fasting, and strategic sunset Iftar.</p>
+          <small>6 Slots • 10 Glasses Water</small>
+        </div>
+
+        <div class="preset-box" onclick="loadPreset('highprotein')">
+          <h4>💪 High-Protein Muscle Cut</h4>
+          <p>Optimized for maximal muscle retention with lean halal protein sources (125g+).</p>
+          <small>6 Slots • 10 Glasses Water</small>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================== MODALS ======================== -->
+
+  <!-- 1. Notification Popup Modal -->
+  <div id="modal-alert" class="modal-overlay hidden">
+    <div class="modal-card alert-modal-card">
+      <div class="modal-header">
+        <div class="alert-icon">🔔</div>
+        <div>
+          <h3 id="alert-item-time" class="alert-time">07:30</h3>
+          <h2 id="alert-item-title" class="alert-title">Breakfast Reminder</h2>
+        </div>
+      </div>
+
+      <div class="alert-body">
+        <div id="alert-foods-box" class="alert-foods-box">
+          <!-- Foods list -->
+        </div>
+        <div class="alert-water-pill">
+          💧 Recommended Water: <strong id="alert-water-amount">2 glasses (~500ml)</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-alert-done" class="btn btn-emerald full-width">✅ Mark Completed</button>
+        <button id="btn-alert-snooze" class="btn btn-slate">💤 Snooze 10m</button>
+        <button id="btn-alert-close" class="btn btn-ghost">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Super Admin Panel Modal (Exclusive for Ridwaan) -->
+  <div id="modal-admin" class="modal-overlay hidden">
+    <div class="modal-card admin-modal-card">
+      <div class="admin-header">
+        <div class="admin-badge-group">
+          <span class="zap-icon">⚡</span>
+          <div>
+            <h2>Ridwaan's Command Center <span class="badge badge-gold">SUPER ADMIN</span></h2>
+            <p class="admin-email">Verified Owner: ridwaannuuhali@gmail.com • Web Audio Engine Online</p>
+          </div>
+        </div>
+        <button id="btn-close-admin" class="btn-icon-close">✕</button>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('simulator')">Time Machine</button>
+        <button class="admin-tab" onclick="switchAdminTab('sound')">Chime Lab</button>
+        <button class="admin-tab" onclick="switchAdminTab('json')">JSON Blueprint</button>
+      </div>
+
+      <div class="admin-content">
+        <!-- Tab 1: Simulator -->
+        <div id="admin-tab-simulator" class="admin-tab-pane active">
+          <h4>⚡ Instant Schedule Trigger Simulator</h4>
+          <p class="admin-desc">Test any scheduled alert and sound instantaneously.</p>
+          <div class="admin-triggers-grid" id="admin-triggers-grid">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="admin-action-row">
+            <button id="btn-fast-run-day" class="btn btn-amber">▶ Fast-Run 24h Simulation</button>
+            <button id="btn-admin-complete-all" class="btn btn-emerald">✅ Complete All & Confetti</button>
+            <button id="btn-admin-confetti" class="btn btn-purple">🎉 Explode Confetti</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Sound Lab -->
+        <div id="admin-tab-sound" class="admin-tab-pane">
+          <h4>🔊 Synthesizer Chime Soundboard (Web Audio API)</h4>
+          <div class="sound-grid">
+            <div class="sound-card">
+              <h5>Crystal Chime</h5>
+              <button onclick="playSound('crystal')" class="btn btn-slate text-xs">Play 4-Note Chime</button>
+            </div>
+            <div class="sound-card">
+              <h5>Hydro Droplet</h5>
+              <button onclick="playSound('droplet')" class="btn btn-slate text-xs">Play Water Drop</button>
+            </div>
+            <div class="sound-card">
+              <h5>Gentle Bell</h5>
+              <button onclick="playSound('bell')" class="btn btn-slate text-xs">Play Harmonic Bell</button>
+            </div>
+            <div class="sound-card">
+              <h5>Cyber Pulse</h5>
+              <button onclick="playSound('cyber')" class="btn btn-slate text-xs">Play Cyber Ping</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: JSON Blueprint -->
+        <div id="admin-tab-json" class="admin-tab-pane">
+          <h4>📄 Raw Schedule JSON Blueprint</h4>
+          <textarea id="admin-json-textarea" class="admin-json-box"></textarea>
+          <div class="admin-action-row">
+            <button id="btn-admin-apply-json" class="btn btn-amber">Apply JSON Changes</button>
+            <button id="btn-admin-copy-json" class="btn btn-slate">Copy JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
